@@ -1,0 +1,64 @@
+name : Deployement
+
+on :
+    push:
+        branches : [ "main" ]
+    pull_request:
+        branches : [ "main" ]
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    pull-requests: write
+    actions: read
+
+jobs:
+    quality-security:
+        name: Code quality & Security scan
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Run Trivy vulnerability scanner
+              uses: aquasecurity/trivy-action@0.33.0
+              with:
+                  scan-type: fs
+                  scan-ref: .
+
+    docker-release:
+        name: Build & Release Docker
+        runs-on: ubuntu-latest
+        needs: [quality-security]
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+            
+            - name: Log in to Github Container Registry
+              uses: docker/login-action@v3
+              with:
+                registry: ghcr.io
+                username: ${{ github.actor }}
+                password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Build Docker image
+              run: |
+                IMAGE_NAME=ghcr.io/${ GITHUB_REPOSITORY,,}
+                docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:${{ github.run_number }} .
+
+            - name: Push Docker image
+              run: |
+                IMAGE_NAME=ghcr.io/${ GITHUB_REPOSITORY,,}
+                docker push $IMAGE_NAME:latest
+                docker push $IMAGE_NAME:${{ github.run_number }}
+
+            - name: Create GitHub Release
+              uses: softprops/action-gh-release@v2
+              with:
+                tag_name: v${{ github.run_number }}
+                name: "Release v${{ github.run_number }}"
+                body: |
+                  generated github release
+                  - Docker image: ghcr.io/${ GITHUB_REPOSITORY,,}:latest
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
