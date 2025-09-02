@@ -1,12 +1,8 @@
-/** 
- * Next.js config pour image Docker "standalone".
- * Si tu as déjà un next.config.js, ajoute simplement: output: 'standalone'
- */
+// Next.js standalone pour Docker
 const nextConfig = {
   output: 'standalone',
-  // active le strict mode si tu veux:
-  // reactStrictMode: true,
-  // si tu utilises des redirects/rewrites/images, garde-les ici.
+  // Si tu veux éviter que le build Docker échoue pour des erreurs ESLint,
+  // décommente la ligne suivante (tu as déjà linté en CI de toute façon).
+  // eslint: { ignoreDuringBuilds: true },
 };
-
 module.exports = nextConfig;
