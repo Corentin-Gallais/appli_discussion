@@ -43,12 +43,12 @@ jobs:
 
             - name: Build Docker image
               run: |
-                IMAGE_NAME=ghcr.io/${ GITHUB_REPOSITORY,,}
+                IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}
                 docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:${{ github.run_number }} .
 
             - name: Push Docker image
               run: |
-                IMAGE_NAME=ghcr.io/${ GITHUB_REPOSITORY,,}
+                IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}
                 docker push $IMAGE_NAME:latest
                 docker push $IMAGE_NAME:${{ github.run_number }}
 
@@ -59,6 +59,6 @@ jobs:
                 name: "Release v${{ github.run_number }}"
                 body: |
                   generated github release
-                  - Docker image: ghcr.io/${ GITHUB_REPOSITORY,,}:latest
+                  - Docker image: ghcr.io/${GITHUB_REPOSITORY,,}:latest
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
