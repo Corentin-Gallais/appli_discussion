@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Logs
+npm-debug.log*
+yarn-error.log
+pnpm-debug.log
+
+# Env (garde un exemple)
+.env
+.env.*
+!.env.example
+
+# Misc
+.DS_Store
+.vscode/
+.idea/
+coverage/
